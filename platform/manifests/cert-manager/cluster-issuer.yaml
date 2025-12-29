@@ -9,10 +9,6 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-staging
     solvers:
-    - http01:
-        ingress:
-          ingressClassName: cilium
-          ingressTemplate:
-            metadata:
-              annotations:
-                ingress.cilium.io/force-https: "disabled"
+    - dns01:
+        cloudDNS:
+          project: docker-1210

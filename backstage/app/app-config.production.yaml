@@ -1,17 +1,17 @@
 app:
   title: Backstage Platform
-  baseUrl: http://backstage.kofiray.net
+  baseUrl: https://backstage.kofiray.net
 
 organization:
   name: Platform Team
 
 backend:
-  baseUrl: http://backstage.kofiray.net
+  baseUrl: https://backstage.kofiray.net
   listen:
     port: 7007
     host: 0.0.0.0
   cors:
-    origin: http://backstage.kofiray.net
+    origin: https://backstage.kofiray.net
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   database:
