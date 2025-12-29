@@ -1,0 +1,113 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://helm.cilium.io/
+    chart: cilium
+    targetRevision: 1.14.5
+    helm:
+      values: |
+        cluster:
+          name: backstage-prod
+          id: 1
+        
+        # Enable Cilium Ingress Controller
+        ingressController:
+          enabled: true
+          loadbalancerMode: shared
+          service:
+            type: LoadBalancer
+            annotations:
+              cloud.google.com/load-balancer-type: "External"
+        
+        # Enable Gateway API support
+        gatewayAPI:
+          enabled: true
+        
+        # Enable Hubble for observability
+        hubble:
+          enabled: true
+          relay:
+            enabled: true
+          ui:
+            enabled: true
+            ingress:
+              enabled: true
+              annotations:
+                cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              hosts:
+                - hubble.kofiray.net
+              tls:
+                - secretName: hubble-tls
+                  hosts:
+                    - hubble.kofiray.net
+        
+        # Enable L7 proxy for advanced features
+        l7Proxy: true
+        
+        # Enable bandwidth manager
+        bandwidthManager:
+          enabled: true
+        
+        # Enable local redirect policy
+        localRedirectPolicy: true
+        
+        # Enable socket-based load balancing
+        socketLB:
+          enabled: true
+        
+        # Enable node port acceleration
+        nodePort:
+          enabled: true
+        
+        # Enable BGP control plane
+        bgpControlPlane:
+          enabled: true
+        
+        # Operator configuration
+        operator:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        
+        # Agent resources
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        
+        # Enable prometheus metrics
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+        
+        # Enable network policies
+        policyEnforcementMode: "default"
+        
+        # Enable encryption
+        encryption:
+          enabled: true
+          type: wireguard
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true

@@ -213,8 +213,9 @@ spec:
         ingress:
           enabled: true
           annotations:
-            kubernetes.io/ingress.class: "gce"
+            ingress.cilium.io/loadbalancer-mode: shared
             cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          ingressClassName: cilium
           hosts:
             - grafana.kofiray.net
           tls:
@@ -263,8 +264,9 @@ spec:
           ingress:
             enabled: true
             annotations:
-              kubernetes.io/ingress.class: "gce"
+              ingress.cilium.io/loadbalancer-mode: shared
               cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            ingressClassName: cilium
             hostName: jenkins.kofiray.net
             tls:
               - secretName: jenkins-tls
@@ -300,8 +302,9 @@ spec:
         ingress:
           enabled: true
           annotations:
-            kubernetes.io/ingress.class: "gce"
+            ingress.cilium.io/loadbalancer-mode: shared
             cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          ingressClassName: cilium
           hosts:
             - name: sonarqube.kofiray.net
               path: /
@@ -344,6 +347,71 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: lighthouse
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+# Cilium CNI and Ingress Controller
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://helm.cilium.io/
+    chart: cilium
+    targetRevision: 1.14.5
+    helm:
+      values: |
+        cluster:
+          name: backstage-prod
+          id: 1
+        ingressController:
+          enabled: true
+          loadbalancerMode: shared
+          service:
+            type: LoadBalancer
+        gatewayAPI:
+          enabled: true
+        hubble:
+          enabled: true
+          relay:
+            enabled: true
+          ui:
+            enabled: true
+            ingress:
+              enabled: true
+              annotations:
+                cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              hosts:
+                - hubble.kofiray.net
+              tls:
+                - secretName: hubble-tls
+                  hosts:
+                    - hubble.kofiray.net
+        l7Proxy: true
+        bandwidthManager:
+          enabled: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        prometheus:
+          enabled: true
+        encryption:
+          enabled: true
+          type: wireguard
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true

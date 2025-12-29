@@ -24,6 +24,7 @@ This will automatically:
 - **🔍 SonarQube**: `https://sonarqube.kofiray.net` - Code quality
 - **🔐 Vault**: `https://vault.kofiray.net` - Secret management
 - **💡 Lighthouse CI**: `https://lighthouse-ci.kofiray.net` - Performance audits
+- **🕸️ Hubble UI**: `https://hubble.kofiray.net` - Cilium network observability
 - **📈 SigNoz**: Port-forward for observability
 
 ---

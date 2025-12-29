@@ -68,6 +68,9 @@ resource "google_container_cluster" "cluster" {
   network    = var.vpc_name
   subnetwork = var.subnet_name
 
+  # Disable default CNI - we'll use Cilium
+  networking_mode = "VPC_NATIVE"
+  
   # Private cluster configuration
   private_cluster_config {
     enable_private_nodes    = true
@@ -81,7 +84,7 @@ resource "google_container_cluster" "cluster" {
     services_secondary_range_name = var.services_range_name
   }
 
-  # Master authorized networks (allow all for simplicity, restrict in production)
+  # Master authorized networks
   master_authorized_networks_config {
     cidr_blocks {
       cidr_block   = "0.0.0.0/0"
@@ -94,21 +97,16 @@ resource "google_container_cluster" "cluster" {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
 
-  # Network policy
-  network_policy {
-    enabled = true
-  }
-
-  # Addons
+  # Disable default addons - Cilium will handle networking
   addons_config {
     http_load_balancing {
-      disabled = false
+      disabled = true  # Cilium ingress controller
     }
     horizontal_pod_autoscaling {
       disabled = false
     }
     network_policy_config {
-      disabled = false
+      disabled = true  # Cilium handles network policies
     }
     gce_persistent_disk_csi_driver_config {
       enabled = true

@@ -81,9 +81,10 @@ metadata:
   name: lighthouse-ingress
   namespace: lighthouse
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    ingress.cilium.io/loadbalancer-mode: shared
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  ingressClassName: cilium
   tls:
   - hosts:
     - lighthouse-ci.kofiray.net
