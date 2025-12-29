@@ -1,5 +1,29 @@
 # Quick Start Guide
 
+## 🚀 **SUPER QUICK DEPLOYMENT (Test Environment)**
+
+**One-command deployment with pre-configured credentials:**
+
+```bash
+./scripts/deploy-all.sh
+```
+
+This will automatically:
+- ✅ Set up all secrets in Google Secret Manager  
+- ✅ Deploy complete infrastructure with Terraform
+- ✅ Set up Cloud Build triggers
+- ✅ Bootstrap Argo CD
+- ✅ Deploy Backstage application
+- ✅ Configure all integrations
+
+**Access your platform:**
+- **Backstage**: `https://backstage.kofiray.net`
+- **Argo CD**: `https://argocd.kofiray.net`
+
+---
+
+## 📋 **Manual Step-by-Step (If Preferred)**
+
 ## Prerequisites Setup
 
 Before deploying, you need to set up authentication keys and secrets.

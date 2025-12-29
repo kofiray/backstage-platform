@@ -15,15 +15,14 @@ fi
 # Set project
 gcloud config set project $PROJECT_ID
 
-# Use provided GitHub OAuth credentials (TEST ENVIRONMENT)
+# Use provided GitHub credentials (TEST ENVIRONMENT)
 GITHUB_CLIENT_ID="Ov23liUZbbZAF6bx51Rc"
 GITHUB_CLIENT_SECRET="7a686d349177c50ab01d13afc2b441f57b154922"
+GITHUB_TOKEN="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"
 
-echo "📝 Please provide the following information:"
-
-# GitHub Personal Access Token
-read -s -p "GitHub Personal Access Token (with repo, read:org, read:user, user:email scopes): " GITHUB_TOKEN
-echo
+echo "📝 GitHub credentials pre-configured for test environment"
+echo "🔑 Client ID: $GITHUB_CLIENT_ID"
+echo "🔑 Token: ${GITHUB_TOKEN:0:8}..."
 
 # Azure DevOps (optional)
 read -p "Azure DevOps Organization (optional, press enter to skip): " AZURE_ORG
