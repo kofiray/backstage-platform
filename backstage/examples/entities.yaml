@@ -116,6 +116,10 @@ metadata:
     jira/project-key: SAMP
     jira/component: sample-microservice
     
+    # Secrets Management
+    vault.io/secrets-path: secret/data/production/sample-microservice
+    vault.io/secrets-engine: secret
+    
   tags:
     - microservice
     - sample

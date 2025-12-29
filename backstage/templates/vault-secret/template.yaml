@@ -1,0 +1,88 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: vault-secret-template
+  title: Create Vault Secret
+  description: Create a new secret in HashiCorp Vault for your service
+  tags:
+    - vault
+    - secrets
+    - security
+spec:
+  owner: platform-team
+  type: resource
+  parameters:
+    - title: Secret Information
+      required:
+        - secretPath
+        - secretName
+        - environment
+      properties:
+        secretPath:
+          title: Secret Path
+          type: string
+          description: Path in Vault where the secret will be stored
+          pattern: '^[a-zA-Z0-9/_-]+$'
+          default: 'secret/data/'
+        secretName:
+          title: Secret Name
+          type: string
+          description: Name of the secret
+          pattern: '^[a-zA-Z0-9_-]+$'
+        environment:
+          title: Environment
+          type: string
+          enum:
+            - development
+            - staging
+            - production
+          description: Environment for this secret
+        description:
+          title: Description
+          type: string
+          description: What this secret is used for
+    - title: Secret Data
+      required:
+        - secretKeys
+      properties:
+        secretKeys:
+          title: Secret Keys
+          type: array
+          description: Keys to create in the secret
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                title: Key Name
+              description:
+                type: string
+                title: Key Description
+            required:
+              - key
+  steps:
+    - id: vault-create-secret
+      name: Create Vault Secret
+      action: vault:secret:create
+      input:
+        path: ${{ parameters.secretPath }}/${{ parameters.environment }}/${{ parameters.secretName }}
+        data:
+          description: ${{ parameters.description }}
+          environment: ${{ parameters.environment }}
+          created_by: backstage
+          created_at: ${{ '' | now }}
+        keys: ${{ parameters.secretKeys }}
+
+    - id: register
+      name: Register Secret
+      action: catalog:register
+      input:
+        catalogInfoUrl: https://github.com/kofiray/backstage-platform/blob/main/vault-secrets/${{ parameters.environment }}/${{ parameters.secretName }}/catalog-info.yaml
+
+  output:
+    links:
+      - title: View in Vault
+        url: https://vault.kofiray.net/ui/vault/secrets/secret/show/${{ parameters.environment }}/${{ parameters.secretName }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

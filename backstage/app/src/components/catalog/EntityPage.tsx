@@ -21,6 +21,7 @@ import { EntityNewRelicDashboardCard } from '@backstage/plugin-newrelic';
 import { EntityRollbarContent } from '@backstage/plugin-rollbar';
 import { EntitySentryCard } from '@backstage/plugin-sentry';
 import { EntitySlackCard } from '@backstage/plugin-slack';
+import { EntityVaultCard } from '@backstage/plugin-vault';
 import { EntityJiraOverviewCard } from '@backstage/plugin-jira';
 
 import {
@@ -97,6 +98,9 @@ const overviewContent = (
     </Grid>
     <Grid item md={6}>
       <EntityJiraOverviewCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntityVaultCard />
     </Grid>
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />

@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://helm.releases.hashicorp.com
+    chart: vault
+    targetRevision: 0.27.0
+    helm:
+      values: |
+        server:
+          ha:
+            enabled: true
+            replicas: 3
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          dataStorage:
+            enabled: true
+            size: 10Gi
+            storageClass: standard-rwo
+          auditStorage:
+            enabled: true
+            size: 5Gi
+            storageClass: standard-rwo
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: "gce"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            hosts:
+              - host: vault.kofiray.net
+                paths: ["/"]
+            tls:
+              - secretName: vault-tls
+                hosts:
+                  - vault.kofiray.net
+        ui:
+          enabled: true
+          serviceType: "ClusterIP"
+        injector:
+          enabled: true
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

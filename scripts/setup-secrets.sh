@@ -114,6 +114,9 @@ echo "placeholder" | gcloud secrets create jira-user-email --data-file=- --repli
 echo "placeholder" | gcloud secrets create jira-api-token --data-file=- --replication-policy=automatic || \
     echo "placeholder" | gcloud secrets versions add jira-api-token --data-file=-
 
+echo "placeholder" | gcloud secrets create vault-token --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add vault-token --data-file=-
+
 echo "✅ Secrets created successfully!"
 echo ""
 echo "🔑 GitHub OAuth configured:"

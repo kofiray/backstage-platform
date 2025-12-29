@@ -174,3 +174,10 @@ jira:
     baseUrl: https://kofiray.atlassian.net
     userEmail: ${JIRA_USER_EMAIL}
     token: ${JIRA_API_TOKEN}
+
+vault:
+  baseUrl: https://vault.kofiray.net
+  token: ${VAULT_TOKEN}
+  kvVersion: 2
+  publicUrl: https://vault.kofiray.net
+  secretEngine: secret
