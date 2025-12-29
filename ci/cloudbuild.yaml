@@ -1,0 +1,58 @@
+steps:
+# Build Backstage image
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - 'europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:$COMMIT_SHA'
+  - '-t'
+  - 'europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:latest'
+  - '-f'
+  - 'backstage/Dockerfile'
+  - 'backstage/'
+
+# Security scan with Trivy
+- name: 'aquasec/trivy:latest'
+  args:
+  - 'image'
+  - '--exit-code'
+  - '1'
+  - '--severity'
+  - 'HIGH,CRITICAL'
+  - '--format'
+  - 'sarif'
+  - '--output'
+  - 'trivy-results.sarif'
+  - 'europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:$COMMIT_SHA'
+
+# Push images
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:$COMMIT_SHA']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:latest']
+
+# Update GitOps manifests
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    git config --global user.email "cloudbuild@docker-1210.iam.gserviceaccount.com"
+    git config --global user.name "Cloud Build"
+    
+    # Update image tag in deployment
+    sed -i "s|image: europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:.*|image: europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage:$COMMIT_SHA|g" platform/manifests/backstage/deployment.yaml
+    
+    # Commit and push if changes exist
+    if ! git diff --quiet; then
+      git add platform/manifests/backstage/deployment.yaml
+      git commit -m "Update Backstage image to $COMMIT_SHA [skip ci]"
+      git push origin main
+    fi
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '1200s'

@@ -1,0 +1,81 @@
+name: Infrastructure Validation
+
+on:
+  pull_request:
+    paths:
+      - 'infra/**'
+      - 'platform/**'
+      - '.github/workflows/**'
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.6.0
+    
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive infra/
+    
+    - name: Terraform Init
+      run: |
+        cd infra/terraform/envs/prod
+        terraform init -backend=false
+    
+    - name: Terraform Validate
+      run: |
+        cd infra/terraform/envs/prod
+        terraform validate
+    
+    - name: TFSec Security Scan
+      uses: aquasecurity/tfsec-action@v1.0.3
+      with:
+        working_directory: infra/terraform
+
+  kubernetes-validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: '3.13.0'
+    
+    - name: Helm Lint
+      run: |
+        find platform/manifests -name "Chart.yaml" -exec dirname {} \; | while read chart_dir; do
+          echo "Linting $chart_dir"
+          helm lint "$chart_dir" || exit 1
+        done
+    
+    - name: Kubeconform Validation
+      run: |
+        curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+        find platform -name "*.yaml" -o -name "*.yml" | grep -v Chart.yaml | while read file; do
+          echo "Validating $file"
+          ./kubeconform -summary -strict "$file" || exit 1
+        done
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

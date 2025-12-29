@@ -1,0 +1,15 @@
+# Copy this file to terraform.tfvars and customize as needed
+
+# GCP Configuration
+project_id = "docker-1210"
+region     = "europe-west2"
+
+# Cluster Configuration
+cluster_name = "backstage-prod"
+
+# DNS Configuration - Using detected kofiray.net zone
+domain_name = "kofiray.net"
+
+# GitHub Configuration
+github_repo_owner = "kofiray"
+github_repo_name  = "backstage-platform"

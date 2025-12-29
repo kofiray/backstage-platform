@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name }}
+  description: ${{ values.description }}
+  annotations:
+    backstage.io/kubernetes-id: ${{ values.name }}
+    backstage.io/kubernetes-namespace: ${{ values.namespace }}
+    backstage.io/kubernetes-label-selector: 'app=${{ values.name }}'
+    argocd/app-name: ${{ values.name }}
+    github.com/project-slug: ${{ values.destination.owner }}/${{ values.destination.repo }}
+    signoz.io/service-name: ${{ values.name }}
+    signoz.io/dashboard-url: /dashboard?service=${{ values.name }}
+  tags:
+    - microservice
+    - kubernetes
+spec:
+  type: service
+  lifecycle: experimental
+  owner: ${{ values.owner }}
+  system: platform

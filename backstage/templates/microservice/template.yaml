@@ -1,0 +1,134 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: microservice-template
+  title: New Microservice on GKE
+  description: Create a new microservice with complete GitOps deployment
+  tags:
+    - recommended
+    - microservice
+    - kubernetes
+    - gitops
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: Service Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the service
+          pattern: '^[a-z0-9-]+$'
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this service is for
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the service
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+    - title: Repository Information
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+    - title: Deployment Configuration
+      required:
+        - namespace
+        - replicas
+      properties:
+        namespace:
+          title: Kubernetes Namespace
+          type: string
+          default: apps
+          description: Kubernetes namespace for deployment
+        replicas:
+          title: Replica Count
+          type: number
+          default: 2
+          description: Number of pod replicas
+        port:
+          title: Service Port
+          type: number
+          default: 8080
+          description: Port the service listens on
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          namespace: ${{ parameters.namespace }}
+          replicas: ${{ parameters.replicas }}
+          port: ${{ parameters.port }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.name }}
+        repoUrl: ${{ parameters.repoUrl }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: create-argocd-app
+      name: Create Argo CD Application
+      action: http:backstage:request
+      input:
+        method: POST
+        path: /api/proxy/argocd/api/v1/applications
+        headers:
+          Content-Type: application/json
+        body:
+          metadata:
+            name: ${{ parameters.name }}
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              repoURL: ${{ steps.publish.output.remoteUrl }}
+              targetRevision: HEAD
+              path: k8s
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: ${{ parameters.namespace }}
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
+      - title: Argo CD Application
+        url: https://argocd.example.com/applications/${{ parameters.name }}

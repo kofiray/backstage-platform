@@ -1,0 +1,39 @@
+# Terraform modules
+infra/terraform/modules/*/terraform.tfstate*
+infra/terraform/modules/*/.terraform/
+infra/terraform/modules/*/.terraform.lock.hcl
+
+# Terraform environments
+infra/terraform/envs/*/terraform.tfstate*
+infra/terraform/envs/*/.terraform/
+infra/terraform/envs/*/.terraform.lock.hcl
+infra/terraform/envs/*/terraform.tfvars
+
+# Backstage
+backstage/app/node_modules/
+backstage/app/dist/
+backstage/app/.env*
+backstage/plugins/*/node_modules/
+backstage/plugins/*/dist/
+
+# CI/CD
+ci/.env*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
