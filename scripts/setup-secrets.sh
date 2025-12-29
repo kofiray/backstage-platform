@@ -15,19 +15,22 @@ fi
 # Set project
 gcloud config set project $PROJECT_ID
 
+# Use provided GitHub OAuth credentials (TEST ENVIRONMENT)
+GITHUB_CLIENT_ID="Ov23liUZbbZAF6bx51Rc"
+GITHUB_CLIENT_SECRET="7a686d349177c50ab01d13afc2b441f57b154922"
+
 echo "📝 Please provide the following information:"
 
-# GitHub OAuth
-read -p "GitHub OAuth Client ID: " GITHUB_CLIENT_ID
-read -s -p "GitHub OAuth Client Secret: " GITHUB_CLIENT_SECRET
-echo
-read -s -p "GitHub Personal Access Token (for API access): " GITHUB_TOKEN
+# GitHub Personal Access Token
+read -s -p "GitHub Personal Access Token (with repo, read:org, read:user, user:email scopes): " GITHUB_TOKEN
 echo
 
 # Azure DevOps (optional)
-read -p "Azure DevOps Organization (optional): " AZURE_ORG
-read -s -p "Azure DevOps Personal Access Token (optional): " AZURE_TOKEN
-echo
+read -p "Azure DevOps Organization (optional, press enter to skip): " AZURE_ORG
+if [ ! -z "$AZURE_ORG" ]; then
+    read -s -p "Azure DevOps Personal Access Token: " AZURE_TOKEN
+    echo
+fi
 
 # Argo CD credentials
 ARGOCD_PASSWORD=$(openssl rand -base64 32)
@@ -71,9 +74,14 @@ echo "placeholder" | gcloud secrets create backstage-k8s-token --data-file=- --r
 
 echo "✅ Secrets created successfully!"
 echo ""
+echo "🔑 GitHub OAuth configured:"
+echo "   Client ID: $GITHUB_CLIENT_ID"
+echo "   Callback URL: https://backstage.kofiray.net/api/auth/github/handler/frame"
+echo ""
 echo "📋 Next steps:"
 echo "1. Deploy infrastructure: cd infra/terraform/envs/prod && terraform apply"
-echo "2. Update Kubernetes service account token after cluster deployment"
-echo "3. Update Argo CD auth token after Argo CD deployment"
+echo "2. Set up Cloud Build: ./scripts/setup-cloudbuild.sh"
+echo "3. Update Kubernetes service account token after cluster deployment"
+echo "4. Update Argo CD auth token after Argo CD deployment"
 echo ""
 echo "🔑 Save this Argo CD admin password: $ARGOCD_PASSWORD"

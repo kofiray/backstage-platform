@@ -4,25 +4,23 @@
 
 Before deploying, you need to set up authentication keys and secrets.
 
-### 1. GitHub OAuth Application
+### 1. GitHub OAuth Application ✅ **DONE**
 
-1. Go to GitHub Settings → Developer settings → OAuth Apps
-2. Click "New OAuth App"
-3. Fill in:
-   - **Application name**: `Backstage Platform`
-   - **Homepage URL**: `https://backstage.YOUR_DOMAIN` (replace with your domain)
-   - **Authorization callback URL**: `https://backstage.YOUR_DOMAIN/api/auth/github/handler/frame`
-4. Save the **Client ID** and **Client Secret**
+**Your OAuth app is already configured:**
+- **Client ID**: `Ov23liUZbbZAF6bx51Rc`
+- **Client Secret**: `7a686d349177c50ab01d13afc2b441f57b154922`
+- **Callback URL**: `https://backstage.kofiray.net/api/auth/github/handler/frame`
 
 ### 2. GitHub Personal Access Token
 
+You still need to create a Personal Access Token:
 1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
 2. Generate new token with scopes:
    - `repo` (Full control of private repositories)
    - `read:org` (Read org and team membership)
    - `read:user` (Read user profile data)
    - `user:email` (Access user email addresses)
-3. Save the token
+3. Save the token - you'll need it for the setup script
 
 ### 3. Azure DevOps (Optional)
 
@@ -42,8 +40,7 @@ Run the setup script to create all required secrets:
 ```
 
 This will prompt you for:
-- GitHub OAuth Client ID and Secret
-- GitHub Personal Access Token  
+- GitHub Personal Access Token (OAuth credentials are pre-configured)
 - Azure DevOps credentials (optional)
 
 ### Step 2: Configure DNS
