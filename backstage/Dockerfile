@@ -1,13 +1,5 @@
 # Multi-stage build for production
-FROM node:18-bullseye-slim as packages
-
-WORKDIR /app
-COPY package.json yarn.lock ./
-COPY packages packages
-
-# Install dependencies
-RUN yarn install --frozen-lockfile --network-timeout 300000
-
+# Multi-stage build for Backstage
 FROM node:18-bullseye-slim as build
 
 # Install system dependencies
@@ -16,6 +8,7 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     build-essential \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install techdocs dependencies
@@ -23,17 +16,22 @@ RUN pip3 install mkdocs-techdocs-core==1.2.3
 
 WORKDIR /app
 
-# Copy dependencies
-COPY --from=packages /app/node_modules ./node_modules
-COPY --from=packages /app/package.json ./package.json
-COPY --from=packages /app/yarn.lock ./yarn.lock
+# Copy package files
+COPY package.json yarn.lock ./
+COPY packages/backend/package.json ./packages/backend/
+COPY app/package.json ./app/
+COPY plugins/signoz/package.json ./plugins/signoz/
 
-# Copy source
+# Install dependencies
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
+# Copy source code
 COPY . .
 
-# Build the backend
-RUN yarn build:backend --config ../../app-config.yaml --config ../../app-config.production.yaml
+# Build the application
+RUN yarn build:backend
 
+# Production image
 FROM node:18-bullseye-slim
 
 # Install runtime dependencies
@@ -42,10 +40,8 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install techdocs dependencies
-RUN pip3 install mkdocs-techdocs-core==1.2.3
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install mkdocs-techdocs-core==1.2.3
 
 # Create app user
 RUN groupadd --gid 1001 --system backstage && \

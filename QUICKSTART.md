@@ -99,15 +99,47 @@ After the cluster is deployed and Backstage namespace is created:
 ./scripts/update-k8s-token.sh
 ```
 
-### Step 6: Build and Deploy Backstage
+### Step 6: Set Up Cloud Build
 
-The Cloud Build trigger will automatically build and deploy Backstage when you push to the main branch. To trigger manually:
+Set up the Cloud Build trigger for automatic image building:
 
 ```bash
-gcloud builds submit --config ci/cloudbuild.yaml .
+./scripts/setup-cloudbuild.sh
 ```
 
-### Step 7: Access Applications
+This will:
+- Enable required APIs
+- Connect your GitHub repository to Cloud Build
+- Create a trigger that builds on pushes to main branch
+
+**Manual Build (Optional):**
+```bash
+./scripts/build-backstage.sh
+```
+
+### Step 7: Build and Deploy Backstage
+
+**Option A: Automatic (Recommended)**
+Push any change to trigger the build:
+```bash
+git add .
+git commit -m "Trigger initial build"
+git push origin main
+```
+
+**Option B: Manual Build**
+```bash
+./scripts/build-backstage.sh
+```
+
+The build process:
+1. ✅ Builds Backstage Docker image
+2. ✅ Scans for security vulnerabilities with Trivy
+3. ✅ Pushes to Artifact Registry: `europe-west2-docker.pkg.dev/docker-1210/platform-images/backstage`
+4. ✅ Updates GitOps manifests with new image tag
+5. ✅ Argo CD automatically deploys the new image
+
+### Step 8: Access Applications
 
 - **Backstage**: `https://backstage.YOUR_DOMAIN`
 - **Argo CD**: `https://argocd.YOUR_DOMAIN`
