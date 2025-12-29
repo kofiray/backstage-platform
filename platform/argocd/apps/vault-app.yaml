@@ -34,7 +34,7 @@ spec:
             enabled: true
             annotations:
               kubernetes.io/ingress.class: "gce"
-              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              cert-manager.io/cluster-issuer: "letsencrypt-staging"
             hosts:
               - host: vault.kofiray.net
                 paths: ["/"]

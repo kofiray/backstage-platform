@@ -5,7 +5,7 @@ metadata:
   namespace: backstage
   annotations:
     ingress.cilium.io/loadbalancer-mode: shared
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
 spec:
   ingressClassName: cilium
   tls:
@@ -31,7 +31,7 @@ metadata:
   namespace: argocd
   annotations:
     ingress.cilium.io/loadbalancer-mode: shared
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
     ingress.cilium.io/service-type: "ClusterIP"
 spec:
   ingressClassName: cilium

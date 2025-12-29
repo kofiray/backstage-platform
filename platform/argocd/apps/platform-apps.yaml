@@ -214,7 +214,7 @@ spec:
           enabled: true
           annotations:
             ingress.cilium.io/loadbalancer-mode: shared
-            cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
           ingressClassName: cilium
           hosts:
             - grafana.kofiray.net
@@ -265,7 +265,7 @@ spec:
             enabled: true
             annotations:
               ingress.cilium.io/loadbalancer-mode: shared
-              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              cert-manager.io/cluster-issuer: "letsencrypt-staging"
             ingressClassName: cilium
             hostName: jenkins.kofiray.net
             tls:
@@ -303,7 +303,7 @@ spec:
           enabled: true
           annotations:
             ingress.cilium.io/loadbalancer-mode: shared
-            cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            cert-manager.io/cluster-issuer: "letsencrypt-staging"
           ingressClassName: cilium
           hosts:
             - name: sonarqube.kofiray.net
@@ -387,7 +387,7 @@ spec:
             ingress:
               enabled: true
               annotations:
-                cert-manager.io/cluster-issuer: "letsencrypt-prod"
+                cert-manager.io/cluster-issuer: "letsencrypt-staging"
               hosts:
                 - hubble.kofiray.net
               tls:
