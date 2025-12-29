@@ -22,8 +22,6 @@ spec:
           loadbalancerMode: shared
           service:
             type: LoadBalancer
-            annotations:
-              cloud.google.com/load-balancer-type: "External"
         
         # Enable Gateway API support
         gatewayAPI:
@@ -36,49 +34,9 @@ spec:
             enabled: true
           ui:
             enabled: true
-            ingress:
-              enabled: true
-              annotations:
-                cert-manager.io/cluster-issuer: "letsencrypt-staging"
-                nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
-              hosts:
-                - hubble.kofiray.net
-              tls:
-                - secretName: hubble-tls
-                  hosts:
-                    - hubble.kofiray.net
         
         # Enable L7 proxy for advanced features
         l7Proxy: true
-        
-        # Enable bandwidth manager
-        bandwidthManager:
-          enabled: true
-        
-        # Enable local redirect policy
-        localRedirectPolicy: true
-        
-        # Enable socket-based load balancing
-        socketLB:
-          enabled: true
-        
-        # Enable node port acceleration
-        nodePort:
-          enabled: true
-        
-        # Enable BGP control plane
-        bgpControlPlane:
-          enabled: true
-        
-        # Operator configuration
-        operator:
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 200m
-              memory: 256Mi
         
         # Agent resources
         resources:
@@ -92,11 +50,6 @@ spec:
         # Enable prometheus metrics
         prometheus:
           enabled: true
-          serviceMonitor:
-            enabled: true
-        
-        # Enable network policies
-        policyEnforcementMode: "default"
         
         # Enable encryption
         encryption:
