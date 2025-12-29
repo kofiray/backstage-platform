@@ -54,14 +54,14 @@ resource "google_project_iam_member" "backstage_secret_accessor" {
 
 # Bind Cloud SQL service account to Backstage K8s SA
 resource "google_service_account_iam_member" "backstage_cloudsql_binding" {
-  service_account_id = var.backstage_cloudsql_sa
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.backstage_cloudsql_sa}"
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[backstage/backstage]"
 }
 
 # Bind TechDocs service account to Backstage K8s SA
 resource "google_service_account_iam_member" "backstage_techdocs_binding" {
-  service_account_id = var.backstage_techdocs_sa
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.backstage_techdocs_sa}"
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[backstage/backstage]"
 }
