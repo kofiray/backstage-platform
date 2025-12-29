@@ -1,0 +1,160 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xgke-clusters
+  labels:
+    provider: gcp
+    service: gke
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: platform.kofiray.net/v1alpha1
+    kind: XGKECluster
+  resources:
+  - name: gke-cluster
+    base:
+      apiVersion: container.gcp.crossplane.io/v1beta2
+      kind: Cluster
+      spec:
+        forProvider:
+          location: europe-west2
+          initialNodeCount: 1
+          removeDefaultNodePool: true
+          workloadIdentityConfig:
+          - workloadPool: docker-1210.svc.id.goog
+          networkPolicy:
+          - enabled: true
+          addonsConfig:
+          - httpLoadBalancing:
+            - disabled: false
+            horizontalPodAutoscaling:
+            - disabled: false
+            networkPolicyConfig:
+            - disabled: false
+          privateClusterConfig:
+          - enablePrivateNodes: true
+            enablePrivateEndpoint: false
+            masterIpv4CidrBlock: "172.16.0.0/28"
+          ipAllocationPolicy:
+          - clusterSecondaryRangeName: "pods"
+            servicesSecondaryRangeName: "services"
+          masterAuthorizedNetworksConfig:
+          - cidrBlocks:
+            - cidrBlock: "0.0.0.0/0"
+              displayName: "All"
+        writeConnectionSecretToRef:
+          namespace: crossplane-system
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: metadata.name
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.nodeCount
+      toFieldPath: spec.forProvider.initialNodeCount
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.location
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.network
+      toFieldPath: spec.forProvider.network
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.subnetwork
+      toFieldPath: spec.forProvider.subnetwork
+    connectionDetails:
+    - fromConnectionSecretKey: kubeconfig
+      name: kubeconfig
+  - name: node-pool
+    base:
+      apiVersion: container.gcp.crossplane.io/v1beta1
+      kind: NodePool
+      spec:
+        forProvider:
+          nodeCount: 1
+          nodeConfig:
+          - machineType: e2-standard-4
+            diskSizeGb: 50
+            diskType: pd-ssd
+            imageType: COS_CONTAINERD
+            oauthScopes:
+            - "https://www.googleapis.com/auth/cloud-platform"
+            workloadMetadataConfig:
+            - mode: GKE_METADATA
+            shieldedInstanceConfig:
+            - enableSecureBoot: true
+              enableIntegrityMonitoring: true
+            labels:
+              environment: production
+            metadata:
+              disable-legacy-endpoints: "true"
+          management:
+          - autoRepair: true
+            autoUpgrade: true
+          autoscaling:
+          - enabled: false
+          upgradeSettings:
+          - maxSurge: 1
+            maxUnavailable: 0
+        writeConnectionSecretToRef:
+          namespace: crossplane-system
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.clusterSelector.matchLabels["crossplane.io/claim-name"]
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.nodeCount
+      toFieldPath: spec.forProvider.nodeCount
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.machineType
+      toFieldPath: spec.forProvider.nodeConfig[0].machineType
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xgkeclusters.platform.kofiray.net
+spec:
+  group: platform.kofiray.net
+  names:
+    kind: XGKECluster
+    plural: xgkeclusters
+  claimNames:
+    kind: GKECluster
+    plural: gkeclusters
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  nodeCount:
+                    type: integer
+                    default: 3
+                  machineType:
+                    type: string
+                    default: "e2-standard-4"
+                  region:
+                    type: string
+                    default: "europe-west2"
+                  network:
+                    type: string
+                  subnetwork:
+                    type: string
+                required:
+                - network
+                - subnetwork
+            required:
+            - parameters
+          status:
+            type: object
+            properties:
+              clusterName:
+                type: string
+              endpoint:
+                type: string

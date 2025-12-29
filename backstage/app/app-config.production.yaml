@@ -74,6 +74,13 @@ catalog:
   locations:
     - type: file
       target: ../../examples/entities.yaml
+  providers:
+    crossplane:
+      dev:
+        baseUrl: http://crossplane-system.svc.cluster.local
+        auth:
+          type: 'bearer'
+          token: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
 
 kubernetes:
   serviceLocatorMethod:
@@ -106,3 +113,9 @@ azureDevOps:
 
 signoz:
   baseUrl: http://signoz-frontend.observability.svc.cluster.local:3301
+
+crossplane:
+  baseUrl: http://crossplane-system.svc.cluster.local
+  auth:
+    type: 'serviceAccount'
+    serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}

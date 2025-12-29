@@ -1,0 +1,15 @@
+apiVersion: platform.kofiray.net/v1alpha1
+kind: TeamNamespace
+metadata:
+  name: ${{ values.name }}
+  namespace: crossplane-system
+spec:
+  parameters:
+    labels:
+      team: ${{ values.team }}
+      managed-by: crossplane
+    resourceQuota:
+      requests.cpu: ${{ values.cpuRequests }}
+      requests.memory: ${{ values.memoryRequests }}
+      limits.cpu: ${{ values.cpuLimits }}
+      limits.memory: ${{ values.memoryLimits }}

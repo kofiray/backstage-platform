@@ -16,7 +16,7 @@ metadata:
     backstage.io/kubernetes-namespace: backstage
     backstage.io/kubernetes-label-selector: 'app=backstage'
     argocd/app-name: backstage
-    github.com/project-slug: your-org/backstage-platform
+    github.com/project-slug: kofiray/backstage-platform
     azure-devops/project: your-project
     azure-devops/build-definition: backstage-build
     signoz.io/service-name: backstage
@@ -26,10 +26,10 @@ metadata:
     - backstage
     - kubernetes
   links:
-    - url: https://backstage.example.com
+    - url: https://backstage.kofiray.net
       title: Live Application
       icon: web
-    - url: https://argocd.example.com/applications/backstage
+    - url: https://argocd.kofiray.net/applications/backstage
       title: Argo CD Deployment
       icon: deployment
     - url: http://signoz-frontend.observability.svc.cluster.local:3301/dashboard?service=backstage
@@ -79,15 +79,18 @@ metadata:
     backstage.io/kubernetes-namespace: apps
     backstage.io/kubernetes-label-selector: 'app=sample-microservice'
     argocd/app-name: sample-microservice
-    github.com/project-slug: your-org/sample-microservice
+    github.com/project-slug: kofiray/sample-microservice
     signoz.io/service-name: sample-microservice
     signoz.io/dashboard-url: /dashboard?service=sample-microservice
+    crossplane.io/claim-name: sample-microservice-app
+    crossplane.io/claim-namespace: crossplane-system
   tags:
     - microservice
     - sample
     - kubernetes
+    - crossplane
   links:
-    - url: https://argocd.example.com/applications/sample-microservice
+    - url: https://argocd.kofiray.net/applications/sample-microservice
       title: Argo CD Deployment
       icon: deployment
     - url: http://signoz-frontend.observability.svc.cluster.local:3301/dashboard?service=sample-microservice

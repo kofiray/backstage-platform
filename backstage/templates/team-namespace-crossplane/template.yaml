@@ -1,0 +1,100 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: team-namespace-crossplane
+  title: New Team Namespace (Crossplane)
+  description: Create a new team namespace with RBAC and policies using Crossplane
+  tags:
+    - recommended
+    - namespace
+    - crossplane
+    - gitops
+spec:
+  owner: platform-team
+  type: resource
+  parameters:
+    - title: Namespace Information
+      required:
+        - name
+        - team
+      properties:
+        name:
+          title: Namespace Name
+          type: string
+          description: Name of the namespace
+          pattern: '^[a-z0-9-]+$'
+        team:
+          title: Team Name
+          type: string
+          description: Team that owns this namespace
+        description:
+          title: Description
+          type: string
+          description: Purpose of this namespace
+    - title: Resource Configuration
+      required:
+        - cpuRequests
+        - memoryRequests
+      properties:
+        cpuRequests:
+          title: CPU Requests
+          type: string
+          default: "2"
+          description: Total CPU requests for the namespace
+        memoryRequests:
+          title: Memory Requests
+          type: string
+          default: "4Gi"
+          description: Total memory requests for the namespace
+        cpuLimits:
+          title: CPU Limits
+          type: string
+          default: "4"
+          description: Total CPU limits for the namespace
+        memoryLimits:
+          title: Memory Limits
+          type: string
+          default: "8Gi"
+          description: Total memory limits for the namespace
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./skeleton-namespace
+        values:
+          name: ${{ parameters.name }}
+          team: ${{ parameters.team }}
+          description: ${{ parameters.description }}
+          cpuRequests: ${{ parameters.cpuRequests }}
+          memoryRequests: ${{ parameters.memoryRequests }}
+          cpuLimits: ${{ parameters.cpuLimits }}
+          memoryLimits: ${{ parameters.memoryLimits }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: Team namespace ${{ parameters.name }}
+        repoUrl: github.com?owner=kofiray&repo=backstage-platform
+        gitCommitMessage: 'Add team namespace: ${{ parameters.name }}'
+        gitAuthorName: 'Backstage Scaffolder'
+        gitAuthorEmail: 'backstage@kofiray.net'
+        sourcePath: crossplane-claims
+        targetPath: crossplane-claims/${{ parameters.name }}
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: https://github.com/kofiray/backstage-platform/tree/main/crossplane-claims/${{ parameters.name }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: View Namespace Claim
+        url: https://github.com/kofiray/backstage-platform/tree/main/crossplane-claims/${{ parameters.name }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}

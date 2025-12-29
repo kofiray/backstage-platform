@@ -1,0 +1,150 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xnamespaces
+  labels:
+    provider: kubernetes
+    service: namespace
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: platform.kofiray.net/v1alpha1
+    kind: XNamespace
+  resources:
+  - name: namespace
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              labels:
+                pod-security.kubernetes.io/enforce: restricted
+                pod-security.kubernetes.io/audit: restricted
+                pod-security.kubernetes.io/warn: restricted
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.labels
+      toFieldPath: spec.forProvider.manifest.metadata.labels
+      policy:
+        mergeOptions:
+          keepMapValues: true
+  - name: resource-quota
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: ResourceQuota
+            metadata:
+              name: default-quota
+            spec:
+              hard:
+                requests.cpu: "2"
+                requests.memory: 4Gi
+                limits.cpu: "4"
+                limits.memory: 8Gi
+                persistentvolumeclaims: "5"
+                pods: "10"
+                services: "5"
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.resourceQuota
+      toFieldPath: spec.forProvider.manifest.spec.hard
+      policy:
+        mergeOptions:
+          keepMapValues: true
+  - name: limit-range
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: LimitRange
+            metadata:
+              name: default-limits
+            spec:
+              limits:
+              - default:
+                  cpu: 500m
+                  memory: 512Mi
+                defaultRequest:
+                  cpu: 100m
+                  memory: 128Mi
+                type: Container
+        providerConfigRef:
+          name: kubernetes-provider
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xnamespaces.platform.kofiray.net
+spec:
+  group: platform.kofiray.net
+  names:
+    kind: XNamespace
+    plural: xnamespaces
+  claimNames:
+    kind: TeamNamespace
+    plural: teamnamespaces
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  labels:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  resourceQuota:
+                    type: object
+                    properties:
+                      requests.cpu:
+                        type: string
+                        default: "2"
+                      requests.memory:
+                        type: string
+                        default: "4Gi"
+                      limits.cpu:
+                        type: string
+                        default: "4"
+                      limits.memory:
+                        type: string
+                        default: "8Gi"
+            required:
+            - parameters
+          status:
+            type: object
+            properties:
+              ready:
+                type: boolean

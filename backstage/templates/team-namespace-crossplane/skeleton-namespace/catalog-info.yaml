@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ${{ values.name }}-namespace
+  description: ${{ values.description }}
+  annotations:
+    crossplane.io/claim-name: ${{ values.name }}
+    crossplane.io/claim-namespace: crossplane-system
+  tags:
+    - namespace
+    - crossplane
+    - ${{ values.team }}
+spec:
+  type: kubernetes-namespace
+  lifecycle: production
+  owner: ${{ values.team }}
+  system: platform
