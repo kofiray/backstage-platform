@@ -16,20 +16,23 @@ spec:
           name: backstage-prod
           id: 1
         
-        # GKE specific configuration
-        nodeinit:
-          enabled: false
-        
-        # Use GKE's existing CNI
+        # GKE compatibility - use existing networking
         cni:
           install: false
         
-        # Enable ingress controller
+        # Don't replace kube-proxy
+        kubeProxyReplacement: "disabled"
+        
+        # Disable features that conflict with GKE
+        nodeinit:
+          enabled: false
+        
+        # Enable only ingress controller
         ingressController:
           enabled: true
           loadbalancerMode: shared
         
-        # Enable Hubble for observability  
+        # Enable Hubble for observability
         hubble:
           enabled: true
           relay:
@@ -37,11 +40,14 @@ spec:
           ui:
             enabled: true
         
-        # Enable L7 proxy
-        l7Proxy: true
-        
-        # Use existing kube-proxy
-        kubeProxyReplacement: "partial"
+        # Minimal resource requirements
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
