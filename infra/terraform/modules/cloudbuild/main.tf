@@ -34,7 +34,8 @@ resource "google_project_service" "cloudbuild" {
   service = "cloudbuild.googleapis.com"
 }
 
-# Cloud Build trigger for Backstage
+# Cloud Build trigger for Backstage - disabled for initial deployment
+/*
 resource "google_cloudbuild_trigger" "backstage_build" {
   project  = var.project_id
   name     = "backstage-build"
@@ -112,7 +113,8 @@ resource "google_cloudbuild_trigger" "backstage_build" {
   depends_on = [google_project_service.cloudbuild]
 }
 
-# Cloud Build trigger for infrastructure validation
+# Cloud Build trigger for infrastructure validation - disabled for initial deployment
+/*
 resource "google_cloudbuild_trigger" "infra_validation" {
   project  = var.project_id
   name     = "infra-validation"
@@ -188,6 +190,7 @@ resource "google_cloudbuild_trigger" "infra_validation" {
 
   depends_on = [google_project_service.cloudbuild]
 }
+*/
 
 # IAM bindings for Cloud Build service account
 resource "google_project_iam_member" "cloudbuild_editor" {

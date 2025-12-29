@@ -113,12 +113,10 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  # Maintenance policy
+  # Maintenance policy - more flexible window
   maintenance_policy {
-    recurring_window {
-      start_time = "2023-01-01T02:00:00Z"
-      end_time   = "2023-01-01T06:00:00Z"
-      recurrence = "FREQ=WEEKLY;BYDAY=SA"
+    daily_maintenance_window {
+      start_time = "02:00"
     }
   }
 
