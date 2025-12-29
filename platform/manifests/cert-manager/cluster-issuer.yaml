@@ -11,4 +11,8 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: cilium
+          ingressClassName: cilium
+          ingressTemplate:
+            metadata:
+              annotations:
+                ingress.cilium.io/force-https: "disabled"
