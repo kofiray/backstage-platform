@@ -15,14 +15,33 @@ spec:
         cluster:
           name: backstage-prod
           id: 1
+        
+        # GKE specific configuration
+        nodeinit:
+          enabled: false
+        
+        # Use GKE's existing CNI
+        cni:
+          install: false
+        
+        # Enable ingress controller
         ingressController:
           enabled: true
+          loadbalancerMode: shared
+        
+        # Enable Hubble for observability  
         hubble:
           enabled: true
           relay:
             enabled: true
           ui:
             enabled: true
+        
+        # Enable L7 proxy
+        l7Proxy: true
+        
+        # Use existing kube-proxy
+        kubeProxyReplacement: "partial"
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
