@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "backstage-ingress-ip"
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
-            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
