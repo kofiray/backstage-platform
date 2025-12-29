@@ -40,7 +40,7 @@ spec:
               enabled: true
               annotations:
                 cert-manager.io/cluster-issuer: "letsencrypt-staging"
-            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
+                nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
               hosts:
                 - hubble.kofiray.net
               tls:

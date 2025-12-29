@@ -205,6 +205,8 @@ resource "google_project_iam_member" "cloudbuild_source_admin" {
   member  = "serviceAccount:${var.cloudbuild_service_account}"
 }
 
+# Outputs disabled while triggers are commented out
+/*
 output "backstage_trigger_id" {
   description = "Backstage build trigger ID"
   value       = google_cloudbuild_trigger.backstage_build.trigger_id
@@ -214,3 +216,4 @@ output "infra_trigger_id" {
   description = "Infrastructure validation trigger ID"
   value       = google_cloudbuild_trigger.infra_validation.trigger_id
 }
+*/
