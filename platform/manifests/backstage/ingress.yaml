@@ -6,8 +6,13 @@ metadata:
   annotations:
     ingress.cilium.io/loadbalancer-mode: shared
     external-dns.alpha.kubernetes.io/hostname: backstage.kofiray.net
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
 spec:
   ingressClassName: cilium
+  tls:
+  - hosts:
+    - backstage.kofiray.net
+    secretName: backstage-tls
   rules:
   - host: backstage.kofiray.net
     http:
