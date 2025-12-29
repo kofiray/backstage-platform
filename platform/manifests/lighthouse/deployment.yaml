@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lighthouse-ci
+  namespace: lighthouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lighthouse-ci
+  template:
+    metadata:
+      labels:
+        app: lighthouse-ci
+    spec:
+      containers:
+      - name: lighthouse-ci
+        image: patrickhulce/lhci-server:0.12.0
+        ports:
+        - containerPort: 9001
+        env:
+        - name: LHCI_STORAGE__SQL_DIALECT
+          value: "sqlite"
+        - name: LHCI_STORAGE__SQL_DATABASE_PATH
+          value: "/data/lhci.db"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 512Mi
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9001
+          initialDelaySeconds: 60
+          periodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: lighthouse-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lighthouse-data
+  namespace: lighthouse
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard-rwo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lighthouse-ci
+  namespace: lighthouse
+spec:
+  selector:
+    app: lighthouse-ci
+  ports:
+  - port: 80
+    targetPort: 9001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lighthouse-ingress
+  namespace: lighthouse
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - lighthouse-ci.kofiray.net
+    secretName: lighthouse-tls
+  rules:
+  - host: lighthouse-ci.kofiray.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lighthouse-ci
+            port:
+              number: 80

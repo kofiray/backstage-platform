@@ -16,9 +16,15 @@ This will automatically:
 - ✅ Deploy Backstage application
 - ✅ Configure all integrations
 
-**Access your platform:**
-- **Backstage**: `https://backstage.kofiray.net`
-- **Argo CD**: `https://argocd.kofiray.net`
+**Access your complete platform:**
+- **🎯 Backstage**: `https://backstage.kofiray.net` - Developer portal
+- **🔄 Argo CD**: `https://argocd.kofiray.net` - GitOps deployments
+- **📊 Grafana**: `https://grafana.kofiray.net` - Dashboards & monitoring
+- **🔧 Jenkins**: `https://jenkins.kofiray.net` - CI/CD pipelines
+- **🔍 SonarQube**: `https://sonarqube.kofiray.net` - Code quality
+- **🔐 Vault**: `https://vault.kofiray.net` - Secret management
+- **💡 Lighthouse CI**: `https://lighthouse-ci.kofiray.net` - Performance audits
+- **📈 SigNoz**: Port-forward for observability
 
 ---
 

@@ -194,3 +194,159 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
+---
+# Monitoring and Development Tools
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 7.0.19
+    helm:
+      values: |
+        adminPassword: admin123
+        ingress:
+          enabled: true
+          annotations:
+            kubernetes.io/ingress.class: "gce"
+            cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          hosts:
+            - grafana.kofiray.net
+          tls:
+            - secretName: grafana-tls
+              hosts:
+                - grafana.kofiray.net
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jenkins.io
+    chart: jenkins
+    targetRevision: 4.8.3
+    helm:
+      values: |
+        controller:
+          adminPassword: admin123
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: "gce"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            hostName: jenkins.kofiray.net
+            tls:
+              - secretName: jenkins-tls
+                hosts:
+                  - jenkins.kofiray.net
+        persistence:
+          enabled: true
+          size: 20Gi
+          storageClass: standard-rwo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jenkins
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarqube
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://SonarSource.github.io/helm-chart-sonarqube
+    chart: sonarqube
+    targetRevision: 10.2.0
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          annotations:
+            kubernetes.io/ingress.class: "gce"
+            cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          hosts:
+            - name: sonarqube.kofiray.net
+              path: /
+          tls:
+            - secretName: sonarqube-tls
+              hosts:
+                - sonarqube.kofiray.net
+        resources:
+          requests:
+            cpu: 400m
+            memory: 2Gi
+          limits:
+            cpu: 800m
+            memory: 4Gi
+        persistence:
+          enabled: true
+          size: 10Gi
+          storageClass: standard-rwo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sonarqube
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lighthouse-ci
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kofiray/backstage-platform.git
+    targetRevision: HEAD
+    path: platform/manifests/lighthouse
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lighthouse
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
