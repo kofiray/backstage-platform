@@ -119,3 +119,58 @@ crossplane:
   auth:
     type: 'serviceAccount'
     serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
+
+grafana:
+  domain: https://grafana.kofiray.net
+  unifiedAlerting: true
+
+jenkins:
+  instances:
+    - name: default
+      baseUrl: https://jenkins.kofiray.net
+      username: ${JENKINS_USERNAME}
+      apiKey: ${JENKINS_API_KEY}
+
+lighthouse:
+  baseUrl: https://lighthouse-ci.kofiray.net
+
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
+snyk:
+  misbehaveLimitReached: true
+  organizationName: ${SNYK_ORG}
+  projectsSource:
+    type: 'api'
+  integrationName: 'SNYK'
+
+sonarqube:
+  baseUrl: https://sonarqube.kofiray.net
+  apiKey: ${SONARQUBE_API_KEY}
+
+datadog:
+  baseUrl: 'https://api.datadoghq.com'
+  apiKey: ${DATADOG_API_KEY}
+  appKey: ${DATADOG_APP_KEY}
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com'
+    key: ${NEW_RELIC_API_KEY}
+
+rollbar:
+  organization: ${ROLLBAR_ORGANIZATION}
+  accountToken: ${ROLLBAR_ACCOUNT_TOKEN}
+
+sentry:
+  organization: ${SENTRY_ORGANIZATION}
+  token: ${SENTRY_TOKEN}
+
+slack:
+  token: ${SLACK_TOKEN}
+
+jira:
+  - name: default
+    baseUrl: https://kofiray.atlassian.net
+    userEmail: ${JIRA_USER_EMAIL}
+    token: ${JIRA_API_TOKEN}

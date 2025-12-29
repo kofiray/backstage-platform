@@ -10,6 +10,18 @@ import { EntityArgoCDOverviewCard } from '@backstage/plugin-argocd';
 import { EntityGithubActionsContent } from '@backstage/plugin-github-actions';
 import { EntityAzureDevOpsContent } from '@backstage/plugin-azure-devops';
 import { SigNozCard, isSigNozAvailable } from '@internal/plugin-signoz';
+import { EntityGrafanaCard } from '@backstage/plugin-grafana';
+import { EntityJenkinsContent } from '@backstage/plugin-jenkins';
+import { EntityLighthouseContent } from '@backstage/plugin-lighthouse';
+import { EntityPagerDutyCard } from '@backstage/plugin-pagerduty';
+import { EntitySnykContent } from '@backstage/plugin-snyk';
+import { EntitySonarQubeCard } from '@backstage/plugin-sonarqube';
+import { EntityDatadogContent } from '@backstage/plugin-datadog';
+import { EntityNewRelicDashboardCard } from '@backstage/plugin-newrelic';
+import { EntityRollbarContent } from '@backstage/plugin-rollbar';
+import { EntitySentryCard } from '@backstage/plugin-sentry';
+import { EntitySlackCard } from '@backstage/plugin-slack';
+import { EntityJiraOverviewCard } from '@backstage/plugin-jira';
 
 import {
   Direction,
@@ -65,6 +77,27 @@ const overviewContent = (
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
+    <Grid item md={6}>
+      <EntityGrafanaCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntityPagerDutyCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntitySonarQubeCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntitySentryCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntityNewRelicDashboardCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntitySlackCard />
+    </Grid>
+    <Grid item md={6}>
+      <EntityJiraOverviewCard />
+    </Grid>
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
@@ -85,6 +118,9 @@ const serviceEntityPage = (
         <EntitySwitch.Case if={isAzureDevOpsAvailable}>
           <EntityAzureDevOpsContent />
         </EntitySwitch.Case>
+        <EntitySwitch.Case if={isJenkinsAvailable}>
+          <EntityJenkinsContent />
+        </EntitySwitch.Case>
         <EntitySwitch.Case>
           <EmptyState
             title="No CI/CD available for this entity"
@@ -97,6 +133,45 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/kubernetes" title="Kubernetes">
       <EntityKubernetesContent refreshIntervalMs={30000} />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/security" title="Security">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntitySnykContent />
+        </Grid>
+        <Grid item xs={12}>
+          <EntitySentryCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/monitoring" title="Monitoring">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityDatadogContent />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityRollbarContent />
+        </Grid>
+        <Grid item xs={6}>
+          <EntityGrafanaCard />
+        </Grid>
+        <Grid item xs={6}>
+          <EntityNewRelicDashboardCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/quality" title="Quality">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityLighthouseContent />
+        </Grid>
+        <Grid item xs={12}>
+          <EntitySonarQubeCard />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
@@ -126,8 +201,15 @@ const websiteEntityPage = (
       </EntitySwitch>
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
-      <EntityKubernetesContent refreshIntervalMs={30000} />
+    <EntityLayout.Route path="/quality" title="Quality">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityLighthouseContent />
+        </Grid>
+        <Grid item xs={12}>
+          <EntitySonarQubeCard />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">

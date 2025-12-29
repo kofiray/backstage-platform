@@ -71,6 +71,49 @@ fi
 echo "placeholder" | gcloud secrets create backstage-k8s-token --data-file=- --replication-policy=automatic || \
     echo "placeholder" | gcloud secrets versions add backstage-k8s-token --data-file=-
 
+# Create placeholders for all integration secrets
+echo "placeholder" | gcloud secrets create jenkins-username --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add jenkins-username --data-file=-
+
+echo "placeholder" | gcloud secrets create jenkins-api-key --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add jenkins-api-key --data-file=-
+
+echo "placeholder" | gcloud secrets create snyk-org --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add snyk-org --data-file=-
+
+echo "placeholder" | gcloud secrets create sonarqube-api-key --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add sonarqube-api-key --data-file=-
+
+echo "placeholder" | gcloud secrets create datadog-api-key --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add datadog-api-key --data-file=-
+
+echo "placeholder" | gcloud secrets create datadog-app-key --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add datadog-app-key --data-file=-
+
+echo "placeholder" | gcloud secrets create new-relic-api-key --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add new-relic-api-key --data-file=-
+
+echo "placeholder" | gcloud secrets create rollbar-organization --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add rollbar-organization --data-file=-
+
+echo "placeholder" | gcloud secrets create rollbar-account-token --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add rollbar-account-token --data-file=-
+
+echo "placeholder" | gcloud secrets create sentry-organization --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add sentry-organization --data-file=-
+
+echo "placeholder" | gcloud secrets create sentry-token --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add sentry-token --data-file=-
+
+echo "placeholder" | gcloud secrets create slack-token --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add slack-token --data-file=-
+
+echo "placeholder" | gcloud secrets create jira-user-email --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add jira-user-email --data-file=-
+
+echo "placeholder" | gcloud secrets create jira-api-token --data-file=- --replication-policy=automatic || \
+    echo "placeholder" | gcloud secrets versions add jira-api-token --data-file=-
+
 echo "✅ Secrets created successfully!"
 echo ""
 echo "🔑 GitHub OAuth configured:"

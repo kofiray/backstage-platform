@@ -73,32 +73,74 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: sample-microservice
-  description: Sample microservice demonstrating platform capabilities
+  description: Sample microservice demonstrating ALL platform capabilities
   annotations:
+    # Kubernetes Integration
     backstage.io/kubernetes-id: sample-microservice
     backstage.io/kubernetes-namespace: apps
     backstage.io/kubernetes-label-selector: 'app=sample-microservice'
+    
+    # GitOps Integration
     argocd/app-name: sample-microservice
-    github.com/project-slug: kofiray/sample-microservice
-    signoz.io/service-name: sample-microservice
-    signoz.io/dashboard-url: /dashboard?service=sample-microservice
     crossplane.io/claim-name: sample-microservice-app
     crossplane.io/claim-namespace: crossplane-system
+    
+    # Source Control
+    github.com/project-slug: kofiray/sample-microservice
+    
+    # Observability
+    signoz.io/service-name: sample-microservice
+    signoz.io/dashboard-url: /dashboard?service=sample-microservice
+    grafana/dashboard-selector: service=sample-microservice
+    datadog/dashboard-url: https://app.datadoghq.com/dashboard/abc-123
+    newrelic.com/dashboard-guid: abc123def456
+    
+    # Security & Quality
+    snyk.io/org-name: kofiray
+    snyk.io/project-ids: abc123,def456
+    sonarqube.org/project-key: sample-microservice
+    lighthouse.com/website-url: https://sample-microservice.kofiray.net
+    
+    # Error Tracking
+    sentry.io/project-slug: sample-microservice
+    rollbar.com/project-name: sample-microservice
+    
+    # CI/CD
+    jenkins.io/job-full-name: sample-microservice/main
+    
+    # Communication & Incidents
+    slack.com/channel: #sample-microservice
+    pagerduty.com/integration-key: abc123def456
+    
+    # Project Management
+    jira/project-key: SAMP
+    jira/component: sample-microservice
+    
   tags:
     - microservice
     - sample
     - kubernetes
     - crossplane
+    - production
   links:
+    - url: https://sample-microservice.kofiray.net
+      title: Live Application
+      icon: web
     - url: https://argocd.kofiray.net/applications/sample-microservice
       title: Argo CD Deployment
       icon: deployment
     - url: http://signoz-frontend.observability.svc.cluster.local:3301/dashboard?service=sample-microservice
       title: SigNoz Observability
       icon: monitoring
+    - url: https://grafana.kofiray.net/d/sample-microservice
+      title: Grafana Dashboard
+      icon: dashboard
+    - url: https://sonarqube.kofiray.net/dashboard?id=sample-microservice
+      title: Code Quality
+      icon: code
 spec:
   type: service
-  lifecycle: experimental
+  lifecycle: production
   owner: development-team
   system: platform
 ---
