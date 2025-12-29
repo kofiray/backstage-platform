@@ -43,7 +43,7 @@ resource "google_storage_bucket" "techdocs" {
   lifecycle_rule {
     condition {
       age                = 7
-      with_state         = "NONCURRENT_VERSION"
+      with_state         = "ARCHIVED"
     }
     action {
       type = "Delete"
