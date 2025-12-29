@@ -18,6 +18,7 @@ spec:
           annotations:
             kubernetes.io/ingress.class: "gce"
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
           hosts:
             - grafana.kofiray.net
           tls:
@@ -140,6 +141,7 @@ spec:
             annotations:
               kubernetes.io/ingress.class: "gce"
               cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
             hostName: jenkins.kofiray.net
             tls:
               - secretName: jenkins-tls
@@ -182,6 +184,7 @@ spec:
           annotations:
             kubernetes.io/ingress.class: "gce"
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
           hosts:
             - name: sonarqube.kofiray.net
               path: /

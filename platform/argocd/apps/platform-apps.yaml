@@ -215,6 +215,8 @@ spec:
           annotations:
             ingress.cilium.io/loadbalancer-mode: shared
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
           ingressClassName: cilium
           hosts:
             - grafana.kofiray.net
@@ -266,6 +268,7 @@ spec:
             annotations:
               ingress.cilium.io/loadbalancer-mode: shared
               cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
             ingressClassName: cilium
             hostName: jenkins.kofiray.net
             tls:
@@ -304,6 +307,7 @@ spec:
           annotations:
             ingress.cilium.io/loadbalancer-mode: shared
             cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
           ingressClassName: cilium
           hosts:
             - name: sonarqube.kofiray.net
@@ -388,6 +392,7 @@ spec:
               enabled: true
               annotations:
                 cert-manager.io/cluster-issuer: "letsencrypt-staging"
+            nginx.ingress.kubernetes.io/whitelist-source-range: "86.177.222.87/32"
               hosts:
                 - hubble.kofiray.net
               tls:

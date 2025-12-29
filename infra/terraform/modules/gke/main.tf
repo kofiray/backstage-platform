@@ -84,11 +84,11 @@ resource "google_container_cluster" "cluster" {
     services_secondary_range_name = var.services_range_name
   }
 
-  # Master authorized networks
+  # Master authorized networks - restrict to home IP only
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = "0.0.0.0/0"
-      display_name = "All"
+      cidr_block   = "86.177.222.87/32"
+      display_name = "Home IP"
     }
   }
 
