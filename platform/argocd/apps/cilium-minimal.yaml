@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://helm.cilium.io/
+    chart: cilium
+    targetRevision: 1.14.5
+    helm:
+      values: |
+        cluster:
+          name: backstage-prod
+          id: 1
+        k8sServiceHost: 10.2.0.1
+        k8sServicePort: 443
+        tunnel: disabled
+        ipam:
+          mode: kubernetes
+        endpointRoutes:
+          enabled: true
+        nativeRoutingCIDR: 10.0.0.0/8
+        ingressController:
+          enabled: true
+          loadbalancerMode: shared
+        kubeProxyReplacement: disabled
+        cni:
+          binPath: /home/kubernetes/bin
+        containerRuntime:
+          integration: containerd
+        securityContext:
+          privileged: false
+        bpf:
+          hostLegacyRouting: true
+        hostServices:
+          enabled: false
+        nodePort:
+          enabled: true
+        hostPort:
+          enabled: false
+        externalIPs:
+          enabled: true
+        nodeSelector:
+          kubernetes.io/os: linux
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

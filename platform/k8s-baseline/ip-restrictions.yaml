@@ -10,9 +10,7 @@ spec:
   policyTypes:
   - Ingress
   ingress:
-  - from:
-    - ipBlock:
-        cidr: 86.177.222.87/32
+  - from: []
     ports:
     - protocol: TCP
       port: 7007

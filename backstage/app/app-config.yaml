@@ -1,0 +1,21 @@
+app:
+  title: Backstage Platform
+  baseUrl: http://localhost:7007
+
+organization:
+  name: Platform Team
+
+backend:
+  baseUrl: http://localhost:7007
+  listen:
+    port: 7007
+    host: 0.0.0.0
+  cors:
+    origin: http://localhost:7007
+    methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+    credentials: true
+
+catalog:
+  locations:
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/catalog-info.yaml

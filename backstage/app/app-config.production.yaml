@@ -1,20 +1,17 @@
 app:
   title: Backstage Platform
-  baseUrl: https://backstage.${DOMAIN_NAME}
+  baseUrl: http://backstage.kofiray.net
 
 organization:
-  name: Platform Engineering
+  name: Platform Team
 
 backend:
-  baseUrl: https://backstage.${DOMAIN_NAME}
+  baseUrl: http://backstage.kofiray.net
   listen:
     port: 7007
     host: 0.0.0.0
-  csp:
-    connect-src: ["'self'", 'http:', 'https:']
-    img-src: ["'self'", 'data:', 'https:']
   cors:
-    origin: https://backstage.${DOMAIN_NAME}
+    origin: http://backstage.kofiray.net
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   database:
@@ -25,62 +22,32 @@ backend:
       user: ${POSTGRES_USER}
       password: ${POSTGRES_PASSWORD}
       database: ${POSTGRES_DB}
-      ssl:
-        rejectUnauthorized: false
-
-integrations:
-  github:
-    - host: github.com
-      token: ${GITHUB_TOKEN}
-
-proxy:
-  '/argocd/api':
-    target: https://argocd.${DOMAIN_NAME}/api/v1/
-    changeOrigin: true
-    secure: true
-    headers:
-      Cookie: ${ARGOCD_AUTH_TOKEN}
-
-techdocs:
-  builder: 'external'
-  generator:
-    runIn: 'local'
-  publisher:
-    type: 'googleGcs'
-    googleGcs:
-      bucketName: ${TECHDOCS_BUCKET_NAME}
-      credentials: ${GOOGLE_APPLICATION_CREDENTIALS}
 
 auth:
-  environment: production
   providers:
     github:
       production:
         clientId: ${GITHUB_CLIENT_ID}
         clientSecret: ${GITHUB_CLIENT_SECRET}
 
-scaffolder:
-  defaultAuthor:
-    name: Backstage Platform
-    email: platform@example.com
-  defaultCommitMessage: 'Initial commit from Backstage'
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
 
 catalog:
-  import:
-    entityFilename: catalog-info.yaml
-    pullRequestBranchName: backstage-integration
-  rules:
-    - allow: [Component, System, API, Resource, Location]
   locations:
-    - type: file
-      target: ../../examples/entities.yaml
-  providers:
-    crossplane:
-      dev:
-        baseUrl: http://crossplane-system.svc.cluster.local
-        auth:
-          type: 'bearer'
-          token: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/catalog-info.yaml
+
+techdocs:
+  builder: 'local'
+  generator:
+    runIn: 'local'
+  publisher:
+    type: 'googleGcs'
+    googleGcs:
+      bucketName: ${TECHDOCS_BUCKET_NAME}
 
 kubernetes:
   serviceLocatorMethod:
@@ -92,92 +59,3 @@ kubernetes:
           name: production
           authProvider: 'serviceAccount'
           serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
-          skipTLSVerify: false
-          skipMetricsLookup: false
-
-argocd:
-  username: ${ARGOCD_USERNAME}
-  password: ${ARGOCD_PASSWORD}
-  appLocatorMethods:
-    - type: 'config'
-      instances:
-        - name: argoInstance1
-          url: https://argocd.${DOMAIN_NAME}
-          username: ${ARGOCD_USERNAME}
-          password: ${ARGOCD_PASSWORD}
-
-azureDevOps:
-  host: dev.azure.com
-  token: ${AZURE_TOKEN}
-  organization: ${AZURE_ORG}
-
-signoz:
-  baseUrl: http://signoz-frontend.observability.svc.cluster.local:3301
-
-crossplane:
-  baseUrl: http://crossplane-system.svc.cluster.local
-  auth:
-    type: 'serviceAccount'
-    serviceAccountToken: ${KUBERNETES_SERVICE_ACCOUNT_TOKEN}
-
-grafana:
-  domain: https://grafana.kofiray.net
-  unifiedAlerting: true
-
-jenkins:
-  instances:
-    - name: default
-      baseUrl: https://jenkins.kofiray.net
-      username: ${JENKINS_USERNAME}
-      apiKey: ${JENKINS_API_KEY}
-
-lighthouse:
-  baseUrl: https://lighthouse-ci.kofiray.net
-
-pagerduty:
-  eventsBaseUrl: 'https://events.pagerduty.com/v2'
-
-snyk:
-  misbehaveLimitReached: true
-  organizationName: ${SNYK_ORG}
-  projectsSource:
-    type: 'api'
-  integrationName: 'SNYK'
-
-sonarqube:
-  baseUrl: https://sonarqube.kofiray.net
-  apiKey: ${SONARQUBE_API_KEY}
-
-datadog:
-  baseUrl: 'https://api.datadoghq.com'
-  apiKey: ${DATADOG_API_KEY}
-  appKey: ${DATADOG_APP_KEY}
-
-newrelic:
-  api:
-    baseUrl: 'https://api.newrelic.com'
-    key: ${NEW_RELIC_API_KEY}
-
-rollbar:
-  organization: ${ROLLBAR_ORGANIZATION}
-  accountToken: ${ROLLBAR_ACCOUNT_TOKEN}
-
-sentry:
-  organization: ${SENTRY_ORGANIZATION}
-  token: ${SENTRY_TOKEN}
-
-slack:
-  token: ${SLACK_TOKEN}
-
-jira:
-  - name: default
-    baseUrl: https://kofiray.atlassian.net
-    userEmail: ${JIRA_USER_EMAIL}
-    token: ${JIRA_API_TOKEN}
-
-vault:
-  baseUrl: https://vault.kofiray.net
-  token: ${VAULT_TOKEN}
-  kvVersion: 2
-  publicUrl: https://vault.kofiray.net
-  secretEngine: secret

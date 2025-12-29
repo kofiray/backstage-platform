@@ -1,4 +1,3 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -12,17 +11,27 @@ spec:
     targetRevision: 1.14.5
     helm:
       values: |
-        agent: false
-        operator:
+        cluster:
+          name: backstage-prod
+          id: 1
+        k8sServiceHost: 10.2.0.1
+        k8sServicePort: 443
+        cni:
+          binPath: /home/kubernetes/bin
+        gke:
           enabled: true
-          replicas: 1
+        ipam:
+          mode: kubernetes
         ingressController:
           enabled: true
           loadbalancerMode: shared
-          service:
-            type: LoadBalancer
-        envoy:
-          enabled: true
+        nodeinit:
+          enabled: false
+        kubeProxyReplacement: disabled
+        operator:
+          replicas: 1
+        hubble:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
